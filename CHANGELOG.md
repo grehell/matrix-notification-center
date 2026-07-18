@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.5.1
+
+- Wake the configured kiosk tablet for every delivered kiosk message instead of
+  only warnings and critical alarms.
+- Added wake support for both screen switches and dedicated `button.*` wake
+  entities.
+- Added a wake test button with an immediate success or error result in kiosk
+  settings.
+
 ## 1.5.0
 
 - Added an authenticated local kiosk bridge for Matrix Energy Center 8.1.0.

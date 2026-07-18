@@ -43,7 +43,7 @@ Recommended repository metadata:
 - Topics: `home-assistant`, `hacs`, `notifications`, `custom-integration`
 - Issues: enabled
 
-Create release `v1.5.0` after the validation workflows pass.
+Create release `v1.5.1` after the validation workflows pass.
 
 ## Install through HACS
 
@@ -61,14 +61,17 @@ No `matrix_notification_center:` or `panel_custom:` YAML is required.
 
 ## Matrix Energy Center kiosk bridge
 
-When Matrix Energy Center 8.1.0 or newer is installed, its kiosk view detects
+When Matrix Energy Center 8.1.2 or newer is installed, its kiosk view detects
 this integration automatically. No IP address, token, Browser Mod or iframe is
 needed. Both panels use the current authenticated Home Assistant session.
 
 In **Centrum Powiadomień → Ustawienia → Panel kiosku** you can enable the
-bridge, set the minimum severity, default display times and optionally enter a
-screen entity such as `switch.tablet_screen`. Every rule can target all kiosks
-with `*` or selected profile IDs such as `salon` and `kuchnia`.
+bridge, set the minimum severity, default display times and enter either a
+screen switch such as `switch.tablet_screen` or a dedicated wake entity such as
+`button.tablet_screen_on`. Version 1.5.1 wakes the configured entity for every
+kiosk message and provides a test button in the same settings card. Every rule
+can target all kiosks with `*` or selected profile IDs such as `salon` and
+`kuchnia`.
 
 Presentation defaults are:
 

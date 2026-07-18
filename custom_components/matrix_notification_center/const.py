@@ -1,7 +1,7 @@
 """Constants for Matrix Notification Center."""
 
 DOMAIN = "matrix_notification_center"
-VERSION = "1.5.0"
+VERSION = "1.5.1"
 
 STORE_KEY = "matrix_notification_center"
 STORE_VERSION = 1

@@ -37,8 +37,8 @@ Both workflows should pass:
 ## 4. Create a release
 
 ```text
-Tag: v1.5.0
-Title: Matrix Notification Center v1.5.0
+Tag: v1.5.1
+Title: Matrix Notification Center v1.5.1
 ```
 
 ## 5. Add the URL to HACS

@@ -1097,14 +1097,15 @@ class MatrixNotificationCenterPanel extends HTMLElement {
         </section>
         <section class="panel"><small>MATRIX BRIDGE</small><h3>PANEL KIOSKU</h3>
           ${this._setToggle("Wysyłaj komunikaty do Energy Center", "ske", settings.kiosk_enabled)}
-          ${this._setToggle("Wybudzaj tablet dla ostrzeżeń i alarmów", "skwake", settings.kiosk_wake_enabled)}
+          ${this._setToggle("Wybudzaj tablet dla każdego komunikatu", "skwake", settings.kiosk_wake_enabled)}
           <div class="form">
             <label>Minimalny poziom<select id="skl">${["informacja", "zadanie", "ostrzezenie", "krytyczne"].map((value) => `<option ${settings.kiosk_min_level === value ? "selected" : ""}>${value}</option>`).join("")}</select></label>
-            <label>Encja ekranu<input id="skentity" value="${this._e(settings.kiosk_wake_entity)}" placeholder="switch.tablet_screen"></label>
+            <label>Encja ekranu lub wybudzenia<input id="skentity" value="${this._e(settings.kiosk_wake_entity)}" placeholder="switch.tablet_screen lub button.tablet_screen_on"></label>
             <label>Informacja (s)<input id="skinfo" type="number" min="0" max="86400" value="${settings.kiosk_info_duration}"></label>
             <label>Zadanie (s)<input id="sktask" type="number" min="0" max="86400" value="${settings.kiosk_task_duration}"></label>
             <label>Ostrzeżenie (s)<input id="skwarning" type="number" min="0" max="86400" value="${settings.kiosk_warning_duration}"></label>
-          </div><p class="settings-note">Alarm krytyczny pozostaje na ekranie do wykonania akcji. Wybudzanie wymaga encji, którą Home Assistant potrafi włączyć.</p>
+            <button class="wide full" data-test-kiosk-wake>TESTUJ WYBUDZENIE</button>
+          </div><p class="settings-note">Komunikat wymagający potwierdzenia pozostaje na ekranie do wykonania akcji. Wybudzanie obsługuje przełącznik ekranu oraz przycisk wybudzenia udostępniony przez integrację tabletu.</p>
         </section>
         <section class="panel users-panel"><div class="panel-heading"><div><small>USERS & DEVICES</small><h3>UŻYTKOWNICY CENTRUM</h3></div><button data-add-user>+ DODAJ UŻYTKOWNIKA</button></div><p class="settings-note">Administrator Centrum może tworzyć reguły i zmieniać ustawienia tego panelu. Nie nadaje to uprawnień administratora całego Home Assistant.</p><p class="current-user">Zalogowany: <b>${this._e(current.name || "brak")}</b> · ID: <code>${this._e(current.id || "brak")}</code></p><div class="users-list">${settings.users.map((user, index) => `<article class="user-config"><div class="user-config-head"><b>UŻYTKOWNIK ${index + 1}</b><button class="icon-danger" data-remove-user="${index}" ${settings.users.length <= 1 ? "disabled" : ""}>USUŃ</button></div><div class="user-config-grid"><label>Nazwa<input data-user-name="${index}" value="${this._e(user.name)}" ${this._noAiAttrs()}></label><label>Usługa notify<input data-user-service="${index}" value="${this._e(user.service)}" placeholder="notify.mobile_app_telefon"></label><label>Powiązany użytkownik HA<select data-user-ha="${index}"><option value="">Brak powiązania — tylko odbiorca</option>${haUsers.map((haUser) => `<option value="${this._e(haUser.id)}" ${haUser.id === user.ha_user_id ? "selected" : ""}>${this._e(haUser.name)}${haUser.is_admin ? " · ADMIN HA" : ""}</option>`).join("")}</select></label><div class="user-flags"><label><input data-user-enabled="${index}" type="checkbox" ${user.enabled ? "checked" : ""}> Aktywny odbiorca</label><label><input data-user-admin="${index}" type="checkbox" ${user.admin ? "checked" : ""}> Administrator Centrum</label></div><div class="user-actions"><button data-use-current="${index}">POWIĄŻ ZE MNĄ</button><button data-test-user="${index}">TEST</button></div></div></article>`).join("")}</div><div class="signal-test"><b>Signal</b><button data-test-service data-service-source="signal">TEST</button></div></section>
       </div><button class="primary save-settings" data-savesettings>ZAPISZ USTAWIENIA</button>`;
@@ -1741,6 +1742,12 @@ class MatrixNotificationCenterPanel extends HTMLElement {
         service: this._settingsDraft.signal_service,
       });
       this._toast(result.success ? "Wysłano test Signal" : "Brak usługi Signal", !result.success);
+    });
+    this.shadowRoot.querySelector("[data-test-kiosk-wake]")?.addEventListener("click", async () => {
+      this._captureSettingsForm();
+      const entityId = this._settingsDraft.kiosk_wake_entity.trim();
+      const result = await this._api("POST", "test_kiosk_wake", { entity_id: entityId });
+      this._toast(result.message || (result.success ? "Wysłano wybudzenie tabletu." : "Nie udało się wybudzić tabletu."), !result.success);
     });
     this.shadowRoot.querySelector("[data-savesettings]")?.addEventListener("click", async () => {
       this._captureSettingsForm();

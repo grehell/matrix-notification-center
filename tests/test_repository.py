@@ -18,8 +18,8 @@ def test_manifest_and_version() -> None:
     manifest = json.loads((COMPONENT / "manifest.json").read_text())
     constants = (COMPONENT / "const.py").read_text()
     assert manifest["domain"] == "matrix_notification_center"
-    assert manifest["version"] == "1.5.0"
-    assert 'VERSION = "1.5.0"' in constants
+    assert manifest["version"] == "1.5.1"
+    assert 'VERSION = "1.5.1"' in constants
 
 
 def test_python_sources_compile() -> None:
@@ -53,6 +53,12 @@ def test_kiosk_rule_and_global_settings() -> None:
         assert token in frontend
     assert "PANEL KIOSKU" in frontend
     assert "WYŚWIETLANIE NA PANELU KIOSKU" in frontend
+    assert "wake_kiosk_entity" in source
+    assert 'domain == "button"' in source
+    assert 'action == "test_kiosk_wake"' in source
+    assert "data-test-kiosk-wake" in frontend
+    publish_source = source[source.index("async def _publish_kiosk_event"):source.index("def _matches_kiosk_profile")]
+    assert 'item["level"] in' not in publish_source
 
 
 def test_frontend_syntax() -> None:

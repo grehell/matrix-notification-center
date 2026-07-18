@@ -1799,6 +1799,32 @@ class NotificationManager:
             minimum
         )
 
+    async def wake_kiosk_entity(self, raw_entity_id: str) -> tuple[bool, str]:
+        """Turn on a kiosk screen switch or press a dedicated wake button."""
+        entity_id = str(raw_entity_id or "").strip().lower()
+        if not entity_id or "." not in entity_id:
+            return False, "Wpisz poprawną encję ekranu tabletu."
+        domain = entity_id.split(".", 1)[0]
+        if domain == "button":
+            service_domain, service = "button", "press"
+        elif domain in {"sensor", "binary_sensor", "camera", "device_tracker"}:
+            return False, f"Encji {entity_id} nie można włączyć ani nacisnąć."
+        else:
+            service_domain, service = "homeassistant", "turn_on"
+        if not self.hass.services.has_service(service_domain, service):
+            return False, f"Brak usługi {service_domain}.{service} dla {entity_id}."
+        try:
+            await self.hass.services.async_call(
+                service_domain,
+                service,
+                {"entity_id": entity_id},
+                blocking=True,
+            )
+        except Exception as err:  # Home Assistant integrations expose varied errors.
+            _LOGGER.warning("Could not wake kiosk through %s: %s", entity_id, err)
+            return False, f"Nie udało się wybudzić tabletu przez {entity_id}."
+        return True, f"Wysłano wybudzenie przez {entity_id}."
+
     async def _publish_kiosk_event(self, active: dict[str, Any]) -> None:
         if not self._kiosk_allowed(active):
             return
@@ -1819,16 +1845,11 @@ class NotificationManager:
         if (
             settings.get("kiosk_wake_enabled", False)
             and active.get("kiosk_wake", True)
-            and item["level"] in {"ostrzezenie", "krytyczne"}
             and wake_entity
-            and self.hass.services.has_service("homeassistant", "turn_on")
         ):
-            await self.hass.services.async_call(
-                "homeassistant",
-                "turn_on",
-                {"entity_id": wake_entity},
-                blocking=False,
-            )
+            success, message = await self.wake_kiosk_entity(wake_entity)
+            if not success:
+                _LOGGER.warning("Kiosk wake request failed: %s", message)
 
     @staticmethod
     def _matches_kiosk_profile(item: dict[str, Any], profile: str) -> bool:
@@ -2284,6 +2305,11 @@ class UtilityView(BaseView):
                 self.context(request),
             )
             return self.json({"success": ok})
+        if action == "test_kiosk_wake":
+            success, message = await self.manager(request).wake_kiosk_entity(
+                str(body.get("entity_id", ""))
+            )
+            return self.json({"success": success, "message": message})
         if action == "test_recipient":
             ok = await self.manager(request).test_recipient(
                 str(body.get("recipient", "")), self.context(request)
