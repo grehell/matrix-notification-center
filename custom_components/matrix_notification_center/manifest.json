@@ -1,0 +1,18 @@
+{
+  "domain": "matrix_notification_center",
+  "name": "Matrix Notification Center",
+  "version": "1.5.0",
+  "config_flow": true,
+  "single_config_entry": true,
+  "documentation": "https://github.com/grehell/matrix-notification-center",
+  "issue_tracker": "https://github.com/grehell/matrix-notification-center/issues",
+  "codeowners": [],
+  "dependencies": [
+    "frontend",
+    "http",
+    "panel_custom"
+  ],
+  "requirements": [],
+  "integration_type": "service",
+  "iot_class": "local_push"
+}

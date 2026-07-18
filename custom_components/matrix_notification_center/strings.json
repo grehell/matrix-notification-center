@@ -1,0 +1,14 @@
+{
+  "title": "Matrix Notification Center",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Set up Matrix Notification Center",
+        "description": "Creates a local notification center and adds its panel to the Home Assistant sidebar. Recipients and notify services are configured later inside the panel."
+      }
+    },
+    "abort": {
+      "already_configured": "Matrix Notification Center is already configured."
+    }
+  }
+}

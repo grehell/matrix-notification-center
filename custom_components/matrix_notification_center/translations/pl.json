@@ -1,0 +1,14 @@
+{
+  "title": "Matrix Notification Center",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Konfiguracja Matrix Notification Center",
+        "description": "Tworzy lokalne centrum powiadomień i automatycznie dodaje panel do paska bocznego Home Assistant. Odbiorców oraz usługi notify skonfigurujesz później bezpośrednio w panelu."
+      }
+    },
+    "abort": {
+      "already_configured": "Matrix Notification Center jest już skonfigurowane."
+    }
+  }
+}

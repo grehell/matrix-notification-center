@@ -1,0 +1,48 @@
+send:
+  name: Send notification
+  description: Send a manual notification through Matrix Notification Center.
+  fields:
+    title:
+      name: Title
+      required: true
+      selector:
+        text: {}
+    message:
+      name: Message
+      required: true
+      selector:
+        text:
+          multiline: true
+    level:
+      name: Level
+      default: informacja
+      selector:
+        select:
+          options:
+            - label: Information
+              value: informacja
+            - label: Task
+              value: zadanie
+            - label: Warning
+              value: ostrzezenie
+            - label: Critical
+              value: krytyczne
+    recipients:
+      name: Recipients
+      description: List of recipient names configured in the panel.
+      selector:
+        object: {}
+    require_confirmation:
+      name: Require confirmation
+      default: false
+      selector:
+        boolean: {}
+    bypass_quiet_hours:
+      name: Bypass quiet hours
+      default: false
+      selector:
+        boolean: {}
+
+evaluate:
+  name: Evaluate rules
+  description: Immediately evaluate all enabled notification rules.
